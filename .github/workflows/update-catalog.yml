@@ -1,0 +1,65 @@
+name: Auto-Update Template Catalog
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - '**/template.yaml'
+      - 'Makefile'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - '**/template.yaml'
+      - 'Makefile'
+
+jobs:
+  update-catalog:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Python (for optional YAML validation)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+          
+      - name: Validate templates
+        run: make validate-templates
+        
+      - name: Generate catalog-info.yaml
+        run: make generate-catalog
+        
+      - name: Show template status
+        run: make status
+        
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add catalog-info.yaml
+          git commit -m "🤖 Auto-update template catalog
+          
+          Updated catalog-info.yaml to include all discovered templates.
+          Generated using Makefile for better maintainability."
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

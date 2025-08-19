@@ -1,8 +1,30 @@
 # Backstage Templates Repository
 
-This repository contains Backstage Software Templates for the Devweave organization.
+This repository contains Backstage Software Templates for the Devweave organization with **automatic template discovery**.
 
-## Available Templates
+## 🚀 Automatic Template Discovery
+
+This repository uses an innovative **Makefile-based approach** where templates are **automatically discovered and registered** without manual configuration in the main Backstage instance.
+
+### How It Works
+
+1. **Add Template**: Simply add a new `template.yaml` file anywhere in the repository
+2. **Auto-Discovery**: Makefile commands automatically detect and catalog the template
+3. **GitHub Actions**: Automatically run `make generate-catalog` on template changes
+4. **Dynamic Registration**: Backstage automatically loads all templates from the centralized catalog
+5. **Zero Maintenance**: No need to manually update the main Backstage configuration
+
+### Quick Commands
+
+```bash
+make help                # Show all available commands
+make discover-templates  # Find all templates
+make generate-catalog   # Update catalog-info.yaml
+make validate-templates # Check template syntax
+make all               # Run full pipeline
+```
+
+## 📁 Available Templates
 
 ### Flutter App Template
 
@@ -19,11 +41,39 @@ A comprehensive Backstage template that scaffolds Flutter projects from the Devw
 - Comprehensive project documentation
 
 **Quick Start:**
-1. Ensure this template is registered in your Backstage catalog
-2. Navigate to "Create Component" in Backstage
-3. Select "Flutter App Template"
-4. Fill in the configuration parameters
-5. Click "Create" to scaffold your Flutter project
+1. Navigate to "Create Component" in Backstage
+2. Select "Flutter App Template"
+3. Fill in the configuration parameters
+4. Click "Create" to scaffold your Flutter project
+
+## ➕ Adding New Templates
+
+Adding a new template is incredibly simple:
+
+```bash
+# 1. Create template directory
+mkdir my-awesome-template
+
+# 2. Add template.yaml
+# (see ADDING_TEMPLATES.md for details)
+
+# 3. Test locally
+make validate-templates
+make generate-catalog
+
+# 4. Commit and push
+git add .
+git commit -m "Add my-awesome-template"
+git push
+```
+
+**That's it!** The template will be automatically:
+- ✅ Validated for YAML syntax errors
+- ✅ Discovered by the auto-discovery system
+- ✅ Added to the template catalog
+- ✅ Available in Backstage within minutes
+
+📖 **Detailed Guide**: See [ADDING_TEMPLATES.md](./ADDING_TEMPLATES.md) for complete instructions.
 
 ## Repository Structure
 
@@ -40,32 +90,34 @@ backstage-template/
 └── README.md                # This file
 ```
 
-## Integration with Backstage
+## 🔧 Integration with Backstage
 
-### URL-based Registration (Recommended for Production)
+### One-Time Setup (Recommended)
 
-Add to your Backstage `app-config.yaml`:
+Add this **single line** to your Backstage `app-config.yaml`:
 
 ```yaml
 catalog:
   locations:
     - type: url
-      target: https://github.com/Devweave/backstage-template/blob/main/flutter-template/template.yaml
+      target: https://github.com/Devweave/backstage-template/blob/main/catalog-info.yaml
       rules:
-        - allow: [Template]
+        - allow: [Location, Template]
 ```
 
-### Local File Registration (Development)
+This will automatically discover **all current and future templates** in this repository.
 
-If you have this repository checked out locally:
+### Alternative: Local Development
+
+For local development with this repository checked out:
 
 ```yaml
 catalog:
   locations:
     - type: file
-      target: ../../../backstage-template/flutter-template/template.yaml
+      target: ../../../backstage-template/catalog-info.yaml
       rules:
-        - allow: [Template]
+        - allow: [Location, Template]
 ```
 
 ## Requirements
