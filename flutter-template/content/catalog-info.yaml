@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.repoName }}
+  description: Flutter application - ${{ values.appName }}
+  annotations:
+    github.com/project-slug: Devweave/${{ values.repoName }}
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - flutter
+    - mobile
+    - cross-platform
+    {% for platform in values.platforms %}
+    - {{ platform }}
+    {% endfor %}
+  links:
+    - url: https://github.com/Devweave/${{ values.repoName }}
+      title: Repository
+      icon: github
+spec:
+  type: mobile-app
+  lifecycle: development
+  owner: user:guest
+  system: mobile-apps
+  providesApis: []
+  consumesApis: []
+  dependsOn: []

@@ -1,0 +1,277 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: flutter-app-template
+  title: Flutter App Template
+  description: A template that scaffolds a Flutter project from a boilerplate repository with customizable configuration
+  tags:
+    - flutter
+    - mobile
+    - cross-platform
+spec:
+  owner: user:guest
+  type: service
+
+  parameters:
+    - title: Flutter App Configuration
+      required:
+        - appName
+        - packageName
+        - repoName
+      properties:
+        appName:
+          title: App Display Name
+          type: string
+          description: The display name for your Flutter app
+          ui:autofocus: true
+          pattern: '^[a-zA-Z][a-zA-Z0-9\s]*$'
+          ui:help: 'Enter a user-friendly name for your app (e.g., "My Awesome App")'
+        packageName:
+          title: Package/Bundle ID
+          type: string
+          description: Flutter package/bundle identifier
+          pattern: '^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*$'
+          ui:help: 'Enter a reverse domain notation (e.g., com.example.myapp)'
+        platforms:
+          title: Target Platforms
+          type: array
+          description: Select the platforms you want to include in your Flutter project
+          items:
+            type: string
+            enum:
+              - android
+              - ios
+              - windows
+              - linux
+              - macos
+              - web
+          uniqueItems: true
+          ui:widget: checkboxes
+          default:
+            - android
+            - ios
+        repoName:
+          title: Repository Name
+          type: string
+          description: Name for the GitHub repository that will be created
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9._-]*$'
+          ui:help: 'Repository name (letters, numbers, dots, hyphens, underscores only)'
+
+    - title: Repository Location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - Devweave
+
+  steps:
+    - id: log-start
+      name: Starting Flutter Project Creation
+      action: debug:log
+      input:
+        message: 'Creating Flutter project: ${{ parameters.appName }} with package: ${{ parameters.packageName }}'
+
+    - id: fetch-boilerplate
+      name: Fetch Flutter Boilerplate
+      action: fetch:plain
+      input:
+        url: 'https://github.com/Devweave/flutter-boilerplate'
+        targetPath: ./
+
+    - id: log-fetch-complete
+      name: Boilerplate Fetched
+      action: debug:log
+      input:
+        message: 'Successfully fetched Flutter boilerplate repository'
+
+    - id: remove-git-history
+      name: Remove Git History
+      action: fs:delete
+      input:
+        files:
+          - .git
+
+    - id: install-rename-package
+      name: Install Flutter Rename Package
+      action: roadiehq:utils:fs:execute
+      input:
+        command: flutter
+        args:
+          - pub
+          - global
+          - activate
+          - rename
+
+    - id: log-rename-start
+      name: Starting App Rename
+      action: debug:log
+      input:
+        message: 'Renaming app to: ${{ parameters.appName }}'
+
+    - id: rename-app
+      name: Rename Flutter App
+      action: roadiehq:utils:fs:execute
+      input:
+        command: flutter
+        args:
+          - pub
+          - global
+          - run
+          - rename
+          - --appname
+          - '${{ parameters.appName }}'
+
+    - id: log-package-rename-start
+      name: Starting Package Rename
+      action: debug:log
+      input:
+        message: 'Setting package name to: ${{ parameters.packageName }}'
+
+    - id: rename-package
+      name: Set Package Name
+      action: roadiehq:utils:fs:execute
+      input:
+        command: flutter
+        args:
+          - pub
+          - global
+          - run
+          - rename
+          - --bundleId
+          - '${{ parameters.packageName }}'
+
+    - id: log-platform-config-start
+      name: Starting Platform Configuration
+      action: debug:log
+      input:
+        message: 'Configuring platforms: ${{ parameters.platforms }}'
+
+    # Remove Android platform if not selected
+    - id: remove-android
+      name: Remove Android Platform
+      if: ${{ not ('android' in parameters.platforms) }}
+      action: fs:delete
+      input:
+        files:
+          - android
+
+    # Remove iOS platform if not selected
+    - id: remove-ios
+      name: Remove iOS Platform
+      if: ${{ not ('ios' in parameters.platforms) }}
+      action: fs:delete
+      input:
+        files:
+          - ios
+
+    # Remove Windows platform if not selected
+    - id: remove-windows
+      name: Remove Windows Platform
+      if: ${{ not ('windows' in parameters.platforms) }}
+      action: fs:delete
+      input:
+        files:
+          - windows
+
+    # Remove Linux platform if not selected
+    - id: remove-linux
+      name: Remove Linux Platform
+      if: ${{ not ('linux' in parameters.platforms) }}
+      action: fs:delete
+      input:
+        files:
+          - linux
+
+    # Remove macOS platform if not selected
+    - id: remove-macos
+      name: Remove macOS Platform
+      if: ${{ not ('macos' in parameters.platforms) }}
+      action: fs:delete
+      input:
+        files:
+          - macos
+
+    # Remove Web platform if not selected
+    - id: remove-web
+      name: Remove Web Platform
+      if: ${{ not ('web' in parameters.platforms) }}
+      action: fs:delete
+      input:
+        files:
+          - web
+
+    - id: log-platform-config-complete
+      name: Platform Configuration Complete
+      action: debug:log
+      input:
+        message: 'Successfully configured platforms: ${{ parameters.platforms }}'
+
+    - id: create-catalog-info
+      name: Create Catalog Info
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          appName: ${{ parameters.appName }}
+          packageName: ${{ parameters.packageName }}
+          platforms: ${{ parameters.platforms }}
+          repoName: ${{ parameters.repoName }}
+
+    - id: log-repo-creation-start
+      name: Starting Repository Creation
+      action: debug:log
+      input:
+        message: 'Creating GitHub repository: ${{ parameters.repoName }}'
+
+    - id: publish
+      name: Create GitHub Repository
+      action: publish:github
+      input:
+        description: 'Flutter app: ${{ parameters.appName }}'
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: 'main'
+        repoVariables:
+          FLUTTER_APP_NAME: ${{ parameters.appName }}
+          FLUTTER_PACKAGE_NAME: ${{ parameters.packageName }}
+
+    - id: log-repo-creation-complete
+      name: Repository Creation Complete
+      action: debug:log
+      input:
+        message: 'Successfully created repository and pushed code'
+
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+    - id: log-completion
+      name: Template Execution Complete
+      action: debug:log
+      input:
+        message: 'Flutter project ${{ parameters.appName }} has been successfully created and is available at ${{ steps["publish"].output.remoteUrl }}'
+
+  output:
+    links:
+      - title: Open Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+        icon: github
+      - title: Open in Catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
+    text:
+      - title: App Name
+        content: ${{ parameters.appName }}
+      - title: Package Name
+        content: ${{ parameters.packageName }}
+      - title: Platforms
+        content: ${{ parameters.platforms | join(', ') }}
