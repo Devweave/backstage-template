@@ -66,19 +66,17 @@ generate-catalog: discover-templates ## Generate catalog-info.yaml with all disc
 	@echo "  - scaffolder" >> $(TEMP_FILE)
 	@echo "  - devweave" >> $(TEMP_FILE)
 	@echo "spec:" >> $(TEMP_FILE)
-	@echo "  type: url" >> $(TEMP_FILE)
+	@echo "  type: file" >> $(TEMP_FILE)
 	@echo "  targets:" >> $(TEMP_FILE)
 	@for template in $(TEMPLATE_FILES); do \
-		template_path=$$(echo "$$template" | sed 's|^\./||'); \
-		echo "  - $(GITHUB_BASE_URL)/$$template_path" >> $(TEMP_FILE); \
+		echo "  - $$template" >> $(TEMP_FILE); \
 	done
 	@mv $(TEMP_FILE) $(CATALOG_FILE)
 	@echo "✅ Generated $(CATALOG_FILE) with $(words $(TEMPLATE_FILES)) template(s)"
 	@echo ""
-	@echo "📋 Template URLs registered:"
+	@echo "📋 Template files registered:"
 	@for template in $(TEMPLATE_FILES); do \
-		template_path=$$(echo "$$template" | sed 's|^\./||'); \
-		echo "   - $(GITHUB_BASE_URL)/$$template_path"; \
+		echo "   - $$template"; \
 	done
 
 # Validate templates (basic syntax check without Python)
