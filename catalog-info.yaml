@@ -4,14 +4,14 @@ metadata:
   name: devweave-templates
   description: Devweave Software Templates Repository - Auto-generated template discovery
   annotations:
-    backstage.io/managed-by-location: url:https://github.com/Devweave/backstage-template/blob/main/catalog-info.yaml
+    backstage.io/managed-by-location: url:https://github.com/Devweave/backstage-template/blob/master/catalog-info.yaml
     backstage.io/generated-by: makefile
-    backstage.io/generated-at: 2025-08-19T09:53:07Z
+    backstage.io/generated-at: 2025-08-19T09:58:32Z
   tags:
   - templates
   - scaffolder
   - devweave
 spec:
-  type: file
+  type: url
   targets:
-  - ./flutter-template/template.yaml
+  - https://github.com/Devweave/backstage-template/blob/master/flutter-template/template.yaml

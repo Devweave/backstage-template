@@ -15,7 +15,7 @@ help: ## Show this help message
 # Variables
 CATALOG_FILE := catalog-info.yaml
 TEMPLATE_FILES := $(shell find . -name "template.yaml" -not -path "./.git/*")
-GITHUB_BASE_URL := https://github.com/Devweave/backstage-template/blob/main
+GITHUB_BASE_URL := https://github.com/Devweave/backstage-template/blob/master
 TEMP_FILE := /tmp/catalog-info-temp.yaml
 
 # Tools check
@@ -66,17 +66,19 @@ generate-catalog: discover-templates ## Generate catalog-info.yaml with all disc
 	@echo "  - scaffolder" >> $(TEMP_FILE)
 	@echo "  - devweave" >> $(TEMP_FILE)
 	@echo "spec:" >> $(TEMP_FILE)
-	@echo "  type: file" >> $(TEMP_FILE)
+	@echo "  type: url" >> $(TEMP_FILE)
 	@echo "  targets:" >> $(TEMP_FILE)
 	@for template in $(TEMPLATE_FILES); do \
-		echo "  - $$template" >> $(TEMP_FILE); \
+		template_path=$$(echo "$$template" | sed 's|^\./||'); \
+		echo "  - $(GITHUB_BASE_URL)/$$template_path" >> $(TEMP_FILE); \
 	done
 	@mv $(TEMP_FILE) $(CATALOG_FILE)
 	@echo "✅ Generated $(CATALOG_FILE) with $(words $(TEMPLATE_FILES)) template(s)"
 	@echo ""
-	@echo "📋 Template files registered:"
+	@echo "📋 Template URLs registered:"
 	@for template in $(TEMPLATE_FILES); do \
-		echo "   - $$template"; \
+		template_path=$$(echo "$$template" | sed 's|^\./||'); \
+		echo "   - $(GITHUB_BASE_URL)/$$template_path"; \
 	done
 
 # Validate templates (basic syntax check without Python)
