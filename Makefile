@@ -1,7 +1,7 @@
 # Backstage Templates Makefile
 # This Makefile automates template discovery and catalog generation
 
-.PHONY: help discover-templates generate-catalog validate-templates clean install dev-setup check-tools
+.PHONY: help discover-templates generate-catalog validate-templates validate-yaml clean install dev-setup check-tools
 
 # Default target
 help: ## Show this help message
@@ -81,20 +81,43 @@ generate-catalog: discover-templates ## Generate catalog-info.yaml with all disc
 		echo "   - $(GITHUB_BASE_URL)/$$template_path"; \
 	done
 
-# Validate templates (if Python is available)
-validate-templates: discover-templates ## Validate all template.yaml files for syntax errors
+# Validate templates (basic syntax check without Python)
+validate-templates: discover-templates ## Validate all template.yaml files for basic syntax
 	@echo "🔍 Validating template YAML files..."
+	@for template in $(TEMPLATE_FILES); do \
+		echo "Checking $$template..."; \
+		if head -1 "$$template" | grep -q "apiVersion:"; then \
+			if grep -q "kind: Template" "$$template"; then \
+				if grep -q "metadata:" "$$template" && grep -q "spec:" "$$template"; then \
+					echo "✅ $$template has basic YAML structure"; \
+				else \
+					echo "❌ $$template missing required metadata or spec sections"; \
+					exit 1; \
+				fi; \
+			else \
+				echo "❌ $$template missing 'kind: Template'"; \
+				exit 1; \
+			fi; \
+		else \
+			echo "❌ $$template missing 'apiVersion'"; \
+			exit 1; \
+		fi; \
+	done
+	@echo "✅ All templates passed basic validation"
+
+# Advanced YAML validation (if Python is available)
+validate-yaml: discover-templates ## Advanced YAML syntax validation using Python
+	@echo "🔍 Running advanced YAML validation..."
 	@if command -v python3 >/dev/null 2>&1; then \
 		for template in $(TEMPLATE_FILES); do \
 			echo "Validating $$template..."; \
 			python3 -c "import yaml; yaml.safe_load(open('$$template'))" && echo "✅ $$template is valid" || { echo "❌ $$template has syntax errors"; exit 1; }; \
 		done; \
+		echo "✅ All templates passed advanced YAML validation"; \
 	else \
-		echo "⚠️  Python3 not available - skipping YAML validation"; \
-		echo "📝 Templates discovered (syntax validation skipped):"; \
-		for template in $(TEMPLATE_FILES); do \
-			echo "   - $$template"; \
-		done; \
+		echo "❌ Python3 not available for advanced validation"; \
+		echo "� Run 'make validate-templates' for basic validation"; \
+		exit 1; \
 	fi
 
 # Show current template status
