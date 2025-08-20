@@ -18,6 +18,7 @@ spec:
         - appName
         - packageName
         - repoName
+        - stateManagement
       properties:
         appName:
           title: App Display Name
@@ -57,6 +58,16 @@ spec:
           pattern: '^[a-zA-Z0-9][a-zA-Z0-9._-]*$'
           ui:help: 'Repository name (letters, numbers, dots, hyphens, underscores only)'
 
+        stateManagement:
+          title: State Management
+          type: string
+          description: Choose state management approach
+          enum:
+            - bloc
+            - cubit
+          default: bloc
+          ui:widget: radio
+
     - title: Repository Location
       required:
         - repoUrl
@@ -78,11 +89,20 @@ spec:
       input:
         message: 'Creating Flutter project: ${{ parameters.appName }} with package: ${{ parameters.packageName }}'
 
-    - id: fetch-boilerplate
-      name: Fetch Flutter Boilerplate
+    - id: fetch-boilerplate-bloc
+      name: Fetch Flutter Boilerplate (BLoC)
+      if: ${{ parameters.stateManagement == 'bloc' }}
       action: fetch:plain
       input:
-        url: 'https://github.com/Devweave/flutter-boilerplate'
+        url: https://github.com/Devweave/flutter-boilerplate
+        targetPath: ./
+
+    - id: fetch-boilerplate-cubit
+      name: Fetch Flutter Boilerplate (Cubit)
+      if: ${{ parameters.stateManagement == 'cubit' }}
+      action: fetch:plain
+      input:
+        url: https://github.com/Devweave/flutter-boilerplate/tree/master-cubit
         targetPath: ./
 
     - id: log-fetch-complete
@@ -97,55 +117,6 @@ spec:
       input:
         files:
           - .git
-
-    - id: install-rename-package
-      name: Install Flutter Rename Package
-      action: roadiehq:utils:fs:execute
-      input:
-        command: flutter
-        args:
-          - pub
-          - global
-          - activate
-          - rename
-
-    - id: log-rename-start
-      name: Starting App Rename
-      action: debug:log
-      input:
-        message: 'Renaming app to: ${{ parameters.appName }}'
-
-    - id: rename-app
-      name: Rename Flutter App
-      action: roadiehq:utils:fs:execute
-      input:
-        command: flutter
-        args:
-          - pub
-          - global
-          - run
-          - rename
-          - --appname
-          - '${{ parameters.appName }}'
-
-    - id: log-package-rename-start
-      name: Starting Package Rename
-      action: debug:log
-      input:
-        message: 'Setting package name to: ${{ parameters.packageName }}'
-
-    - id: rename-package
-      name: Set Package Name
-      action: roadiehq:utils:fs:execute
-      input:
-        command: flutter
-        args:
-          - pub
-          - global
-          - run
-          - rename
-          - --bundleId
-          - '${{ parameters.packageName }}'
 
     - id: log-platform-config-start
       name: Starting Platform Configuration
@@ -223,6 +194,12 @@ spec:
           packageName: ${{ parameters.packageName }}
           platforms: ${{ parameters.platforms }}
           repoName: ${{ parameters.repoName }}
+
+    - id: log-package-rename-start
+      name: Starting Package Rename Configuration
+      action: debug:log
+      input:
+        message: 'Creating package_rename_config.yaml for app: ${{ parameters.appName }} with package: ${{ parameters.packageName }}'
 
     - id: log-repo-creation-start
       name: Starting Repository Creation

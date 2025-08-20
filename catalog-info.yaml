@@ -12,6 +12,6 @@ metadata:
   - scaffolder
   - devweave
 spec:
-  type: url
+  type: file
   targets:
-  - https://github.com/Devweave/backstage-template/blob/master/flutter-template/template.yaml
+  - ./flutter-template/template.yaml
