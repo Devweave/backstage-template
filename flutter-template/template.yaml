@@ -194,6 +194,18 @@ spec:
           packageName: ${{ parameters.packageName }}
           platforms: ${{ parameters.platforms }}
           repoName: ${{ parameters.repoName }}
+    
+    - id: create-package-rename-config
+      name: Create Package Rename Config
+      action: fetch:template
+      input:
+        url: ./content/package_rename_config.yaml
+        targetPath: ./package_rename_config.yaml
+        values:
+          appName: ${{ parameters.appName }}
+          packageName: ${{ parameters.packageName }}
+          platforms: ${{ parameters.platforms }}
+          repoName: ${{ parameters.repoName }}
 
     - id: log-package-rename-start
       name: Starting Package Rename Configuration
