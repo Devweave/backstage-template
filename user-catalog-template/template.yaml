@@ -1,0 +1,125 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: user-catalog-template
+  title: User Catalog Template
+  description: A template for creating Backstage user catalog entries when a user doesn't exist in the current catalog
+  tags:
+    - user
+    - catalog
+    - backstage
+spec:
+  owner: user:guest
+  type: user
+
+  parameters:
+    - title: User Information
+      required:
+        - username
+        - displayName
+        - email
+      properties:
+        username:
+          title: Username
+          type: string
+          description: The unique username for the user (lowercase, no spaces)
+          ui:autofocus: true
+          pattern: '^[a-z][a-z0-9-_]*$'
+          ui:help: 'Enter a lowercase username without spaces (e.g., "john.doe" or "jdoe")'
+        displayName:
+          title: Display Name
+          type: string
+          description: The full display name of the user
+          ui:help: 'Enter the user''s full name (e.g., "John Doe")'
+        email:
+          title: Email Address
+          type: string
+          format: email
+          description: The user's email address
+          ui:help: 'Enter a valid email address'
+        
+    - title: User Configuration
+      properties:
+        memberOf:
+          title: Group Membership
+          type: string
+          description: The group this user should belong to
+          default: group:default/guests
+          enum:
+            - group:default/guests
+            - group:default/admins
+            - group:default/developers
+            - group:default/clients
+          enumNames:
+            - 'Guests (default)'
+            - 'Administrators'
+            - 'Developers'
+            - 'Clients'
+          ui:help: 'Select the appropriate group for this user'
+        title:
+          title: Job Title
+          type: string
+          description: The user's job title or role (optional)
+          ui:help: 'Enter the user''s job title or role if known'
+        description:
+          title: Description
+          type: string
+          description: A brief description about the user (optional)
+          ui:widget: textarea
+          ui:options:
+            rows: 3
+          ui:help: 'Enter a brief description about the user'
+
+    - title: Repository Information
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+              - gitlab.com
+            allowedOwners:
+              - Devweave
+          description: Choose a location to store the user catalog file
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          username: ${{ parameters.username }}
+          displayName: ${{ parameters.displayName }}
+          email: ${{ parameters.email }}
+          memberOf: ${{ parameters.memberOf }}
+          title: ${{ parameters.title }}
+          description: ${{ parameters.description }}
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: User catalog entry for ${{ parameters.displayName }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: master
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

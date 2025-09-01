@@ -15,3 +15,4 @@ spec:
   type: url
   targets:
   - https://github.com/Devweave/backstage-template/blob/master/flutter-template/template.yaml
+  - https://github.com/Devweave/backstage-template/blob/master/user-catalog-template/template.yaml
