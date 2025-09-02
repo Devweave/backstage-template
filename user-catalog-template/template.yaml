@@ -10,7 +10,8 @@ metadata:
     - backstage
 spec:
   type: user
-
+  rules:
+    - allow: [catalog.location.create]
   parameters:
     - title: User Information
       required:
@@ -73,6 +74,7 @@ spec:
         repoUrl:
           title: Repository Location
           type: string
+          default: github.com?repo=backstage-catalog&owner=Devweave
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
@@ -96,12 +98,19 @@ spec:
 
     - id: publish
       name: Publish
-      action: publish:github:pull-request
+      action: publish:github:push
       input:
-        description: Add user catalog entry for ${{ parameters.displayName }}
         repoUrl: ${{ parameters.repoUrl }}
-        branchName: add-user-${{ parameters.username }}
-        title: 'Add user: ${{ parameters.displayName }}'
+        branchName: master
+        commitMessage: 'Add user catalog entry for ${{ parameters.displayName }}'
+        gitAuthorName: 'Backstage Scaffolder'
+        gitAuthorEmail: 'scaffolder@backstage.io'
+    
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        catalogInfoUrl: '${{ steps.publish.output.remoteUrl }}/blob/master/users/${{ parameters.username }}.yaml'
 
   output:
     links:
