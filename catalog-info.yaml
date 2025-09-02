@@ -6,7 +6,7 @@ metadata:
   annotations:
     backstage.io/managed-by-location: url:https://github.com/Devweave/backstage-template/blob/master/catalog-info.yaml
     backstage.io/generated-by: makefile
-    backstage.io/generated-at: 2025-09-02T04:55:52Z
+    backstage.io/generated-at: 2025-09-02T09:56:15Z
   tags:
   - templates
   - scaffolder
