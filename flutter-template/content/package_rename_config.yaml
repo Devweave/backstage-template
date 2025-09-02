@@ -1,43 +1,43 @@
 package_rename_config:
-  {{#if (includes values.platforms "android")}}
+{%- if "android" in values.platforms %}
   android:
     app_name: "${{ values.appName }}" # (String) The display name of the android app
     package_name: "${{ values.packageName }}" # (String) The package name of the android app
     override_old_package: "com.example.flutter_boilerplate"
-  {{/if}}
+{%- endif %}
 
-  {{#if (includes values.platforms "ios")}}
+{%- if "ios" in values.platforms %}
   ios:
     app_name: "${{ values.appName }}" # (String) The display name of the ios app
     bundle_name: "${{ values.appName }}" # (String) The bundle name of the ios app
     package_name: "${{ values.packageName }}" # (String) The product bundle identifier of the ios app
-  {{/if}}
+{%- endif %}
 
-  {{#if (includes values.platforms "linux")}}
+{%- if "linux" in values.platforms %}
   linux:
     app_name: "${{ values.appName }}" # (String) The window title of the linux app
     package_name: "${{ values.packageName }}" # (String) The application id of the linux app
     exe_name: "${{ values.repoName }}" # (String) The executable name (binary name) of the linux app
-  {{/if}}
+{%- endif %}
 
-  {{#if (includes values.platforms "macos")}}
+{%- if "macos" in values.platforms %}
   macos:
     app_name: "${{ values.appName }}" # (String) The product name of the macos app
     package_name: "${{ values.packageName }}" # (String) The product bundle identifier of the macos app
-    copyright_notice: "Copyright © {{ now 'YYYY' }} Devweave. All rights reserved." # (String) The product copyright
-  {{/if}}
+    copyright_notice: "Copyright © ${{ now('%Y') }} Devweave. All rights reserved." # (String) The product copyright
+{%- endif %}
 
-  {{#if (includes values.platforms "web")}}
+{%- if "web" in values.platforms %}
   web:
     app_name: "${{ values.appName }}" # (String) The title of the web app and PWA
     short_app_name: "${{ values.appName }}" # (String) The short display name of the PWA
     description: "Flutter application - ${{ values.appName }}" # (String) The description of the web app and PWA
-  {{/if}}
+{%- endif %}
 
-  {{#if (includes values.platforms "windows")}}
+{%- if "windows" in values.platforms %}
   windows:
     app_name: "${{ values.appName }}" # (String) The window title & software name of the windows app
     organization: "Devweave" # (String) The organization name
-    copyright_notice: "Copyright © {{ now 'YYYY' }} Devweave. All rights reserved."
+    copyright_notice: "Copyright © ${{ now('%Y') }} Devweave. All rights reserved."
     exe_name: "${{ values.repoName }}" # (String) The executable name (binary name) of the windows app
-  {{/if}}
+{%- endif %}

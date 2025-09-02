@@ -10,10 +10,6 @@ metadata:
     - flutter
     - mobile
     - cross-platform
-{{#each values.platforms}}
-    - {{this}}
-{{/each}}
-
   links:
     - url: https://github.com/Devweave/${{ values.repoName }}
       title: Repository
