@@ -9,7 +9,6 @@ metadata:
     - catalog
     - backstage
 spec:
-  owner: user:guest
   type: user
 
   parameters:
@@ -24,8 +23,8 @@ spec:
           type: string
           description: The unique username for the user (lowercase, no spaces)
           ui:autofocus: true
-          pattern: '^[a-z][a-z0-9-_]*$'
-          ui:help: 'Enter a lowercase username without spaces (e.g., "john.doe" or "jdoe")'
+          pattern: '^[a-z][a-z0-9-_\.]*$'
+          ui:help: 'Enter a lowercase username without spaces (e.g., "john.doe" or "jdoe"). If username exists, add email prefix like "john.doe.company"'
         displayName:
           title: Display Name
           type: string
@@ -56,19 +55,16 @@ spec:
             - 'Developers'
             - 'Clients'
           ui:help: 'Select the appropriate group for this user'
-        title:
-          title: Job Title
+        company:
+          title: Company
           type: string
-          description: The user's job title or role (optional)
-          ui:help: 'Enter the user''s job title or role if known'
-        description:
-          title: Description
-          type: string
-          description: A brief description about the user (optional)
-          ui:widget: textarea
+          description: The company this client represents
+          ui:help: 'Enter the company name for this client'
+          ui:field: ConditionalField
           ui:options:
-            rows: 3
-          ui:help: 'Enter a brief description about the user'
+            condition:
+              property: memberOf
+              equals: group:default/clients
 
     - title: Repository Information
       required:
@@ -81,7 +77,6 @@ spec:
           ui:options:
             allowedHosts:
               - github.com
-              - gitlab.com
             allowedOwners:
               - Devweave
           description: Choose a location to store the user catalog file
@@ -97,24 +92,16 @@ spec:
           displayName: ${{ parameters.displayName }}
           email: ${{ parameters.email }}
           memberOf: ${{ parameters.memberOf }}
-          title: ${{ parameters.title }}
-          description: ${{ parameters.description }}
+          company: ${{ parameters.company }}
 
     - id: publish
       name: Publish
-      action: publish:github
+      action: publish:github:pull-request
       input:
-        allowedHosts: ['github.com']
-        description: User catalog entry for ${{ parameters.displayName }}
+        description: Add user catalog entry for ${{ parameters.displayName }}
         repoUrl: ${{ parameters.repoUrl }}
-        defaultBranch: master
-
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
+        branchName: add-user-${{ parameters.username }}
+        title: 'Add user: ${{ parameters.displayName }}'
 
   output:
     links:

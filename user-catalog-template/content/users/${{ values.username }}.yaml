@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: ${{ values.username }}
+spec:
+  profile:
+    displayName: ${{ values.displayName }}
+    email: ${{ values.email }}
+    {%- if values.company %}
+    company: ${{ values.company }}
+    {%- endif %}
+  memberOf: [${{ values.memberOf }}]

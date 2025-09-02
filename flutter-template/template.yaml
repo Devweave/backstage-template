@@ -9,7 +9,6 @@ metadata:
     - mobile
     - cross-platform
 spec:
-  owner: user:guest
   type: service
 
   parameters:
