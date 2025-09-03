@@ -14,7 +14,7 @@ help: ## Show this help message
 
 # Variables
 CATALOG_FILE := catalog-info.yaml
-TEMPLATE_FILES := $(shell find . -name "template.yaml" -not -path "./.git/*")
+TEMPLATE_FILES := $(shell find . -type f -name "*template.yaml" -not -path "./.git/*")
 GITHUB_BASE_URL := https://github.com/Devweave/backstage-template/blob/master
 TEMP_FILE := /tmp/catalog-info-temp.yaml
 
