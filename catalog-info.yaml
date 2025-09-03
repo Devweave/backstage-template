@@ -6,7 +6,7 @@ metadata:
   annotations:
     backstage.io/managed-by-location: url:https://github.com/Devweave/backstage-template/blob/master/catalog-info.yaml
     backstage.io/generated-by: makefile
-    backstage.io/generated-at: 2025-09-03T08:02:54Z
+    backstage.io/generated-at: 2025-09-03T08:11:23Z
   tags:
   - templates
   - scaffolder
@@ -15,4 +15,5 @@ spec:
   type: url
   targets:
   - https://github.com/Devweave/backstage-template/blob/master/user-catalog-template/template.yaml
+  - https://github.com/Devweave/backstage-template/blob/master/user-catalog-template/user-role-update-template.yaml
   - https://github.com/Devweave/backstage-template/blob/master/flutter-template/template.yaml
