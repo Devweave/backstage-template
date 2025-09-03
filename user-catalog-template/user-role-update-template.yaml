@@ -17,16 +17,16 @@ spec:
   parameters:
     - title: User Information
       required:
-        - username
+        - user
         - repoUrl
       properties:
-        username:
-          title: Username
+        user:
+          title: User
           type: string
-          description: The username of the existing user to update
-          ui:autofocus: true
-          pattern: '^[a-z][a-z0-9-_\.]*$'
-          ui:help: 'Enter the username of the existing user (lowercase, no spaces)'
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: User
         repoUrl:
           title: Repository Location
           type: string
@@ -70,7 +70,7 @@ spec:
       name: Fetch Repository
       action: fetch:plain
       input:
-        url: ${{ parameters.repoUrl | parseRepoUrl }}
+        url: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
         targetPath: ./
 
     - id: update-user-role
@@ -78,18 +78,18 @@ spec:
       action: roadiehq:utils:fs:replace
       input:
         files:
-          - file: ./users/${{ parameters.username }}.yaml
+          - file: ./users/${{ (parameters.user | parseEntityRef).name }}.yaml
             find: 'memberOf: \[.*\]'
-            replace: 'memberOf: [${{ parameters.newMemberOf }}]'
+            replaceWith: 'memberOf: [${{ parameters.newMemberOf }}]'
             matchRegex: true
 
     - id: publish
-      name: Publish Changes
+      name: Publish
       action: publish:github:push
       input:
         repoUrl: ${{ parameters.repoUrl }}
         branchName: master
-        commitMessage: 'Update user role for ${{ parameters.username }} to ${{ parameters.newMemberOf }}{% if parameters.updateReason %} - ${{ parameters.updateReason }}{% endif %}'
+        commitMessage: 'Update user role for ${{ (parameters.user | parseEntityRef).name }}'
         gitAuthorName: 'Backstage Scaffolder'
         gitAuthorEmail: 'scaffolder@backstage.io'
 
@@ -98,4 +98,4 @@ spec:
       - title: Repository
         url: ${{ steps.publish.output.remoteUrl }}
       - title: Updated User File
-        url: ${{ steps.publish.output.remoteUrl }}/blob/master/users/${{ parameters.username }}.yaml
+        url: ${{ steps.publish.output.remoteUrl }}/blob/master/users/${{ (parameters.user | parseEntityRef).name }}.yaml
