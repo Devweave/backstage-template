@@ -92,6 +92,12 @@ spec:
         commitMessage: 'Update user role for ${{ (parameters.user | parseEntityRef).name }}'
         gitAuthorName: 'Backstage Scaffolder'
         gitAuthorEmail: 'scaffolder@backstage.io'
+    
+    - id: fetch
+      name: Fetch catalog entity
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.user }}
 
   output:
     links:
