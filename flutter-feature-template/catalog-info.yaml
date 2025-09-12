@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: flutter-feature-template
+  title: Flutter Feature Generator
+  description: Generate Flutter features following Clean Architecture principles with conditional components
+  tags:
+    - flutter
+    - clean-architecture
+    - feature
+    - mobile
+    - scaffolder
+spec:
+  owner: flutter-team
+  type: service

@@ -16,3 +16,4 @@ spec:
   - ./user-catalog-template/template.yaml
   - ./user-catalog-template/user-role-update-template.yaml
   - ./flutter-template/template.yaml
+  - ./flutter-feature-template/template.yaml

@@ -1,0 +1,284 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: flutter-feature-template
+  title: Flutter Feature Generator
+  description: Generate Flutter feature following Clean Architecture principles with conditional components
+  tags:
+    - flutter
+    - clean-architecture
+    - feature
+    - mobile
+spec:
+  owner: flutter-team
+  type: service
+  parameters:
+    - title: Feature Configuration
+      required:
+        - feature_name
+        - type_feature
+        - appName
+      properties:
+        appName:
+          title: App Name
+          type: string
+          description: Name of the Flutter app (for package imports)
+          pattern: '^[a-zA-Z][a-zA-Z0-9 _]*$'
+          ui:field: roadiehq:utils:fs:parse
+          ui:options:
+            parser: yaml
+            path: ./catalog-info.yaml
+            property: metadata.package_name
+        feature_name:
+          title: Feature Name
+          type: string
+          description: Name of the feature (snake_case, e.g., user_profile, notifications)
+          pattern: '^[a-z][a-z0-9_]*$'
+        type_feature:
+          title: Feature Type
+          type: string
+          description: Whether to create a new feature or add to existing
+          enum: [new, existing]
+          enumNames: [New Feature, Add to Existing Feature]
+          default: new
+
+    - title: Presentation Layer Components
+      properties:
+        add_screen:
+          title: Add Screen/Page
+          type: boolean
+          description: Generate a Flutter screen/page for the feature
+          default: false
+        screen_name:
+          title: Screen Name
+          type: string
+          description: Name of the screen (snake_case, e.g., profile_screen)
+          pattern: '^[a-z][a-z0-9_]*$'
+        add_bloc:
+          title: Add BLoC State Management
+          type: boolean
+          description: Generate BLoC components (bloc, event, state files)
+          default: false
+        bloc_name:
+          title: BLoC Name
+          type: string
+          description: Name of the BLoC (snake_case, e.g., profile)
+          pattern: '^[a-z][a-z0-9_]*$'
+      dependencies:
+        screen_name:
+          oneOf:
+            - properties:
+                add_screen:
+                  const: false
+            - properties:
+                add_screen:
+                  const: true
+              required:
+                - screen_name
+        bloc_name:
+          oneOf:
+            - properties:
+                add_bloc:
+                  const: false
+            - properties:
+                add_bloc:
+                  const: true
+              required:
+                - bloc_name
+
+    - title: Domain Layer Components
+      properties:
+        add_entity:
+          title: Add Domain Entity
+          type: boolean
+          description: Generate domain entity class
+          default: false
+        entity_name:
+          title: Entity Name
+          type: string
+          description: Name of the entity (snake_case, e.g., user)
+          pattern: '^[a-z][a-z0-9_]*$'
+        add_usecase:
+          title: Add Use Case
+          type: boolean
+          description: Generate use case implementation
+          default: false
+        usecase_name:
+          title: Use Case Name
+          type: string
+          description: Name of the use case (snake_case, e.g., get_user_profile)
+          pattern: '^[a-z][a-z0-9_]*$'
+        add_repository:
+          title: Add Repository Interface
+          type: boolean
+          description: Generate repository interface in domain layer
+          default: false
+        repository_name:
+          title: Repository Name
+          type: string
+          description: Name of the repository (snake_case, e.g., user_repository)
+          pattern: '^[a-z][a-z0-9_]*$'
+      dependencies:
+        entity_name:
+          oneOf:
+            - properties:
+                add_entity:
+                  const: false
+            - properties:
+                add_entity:
+                  const: true
+              required:
+                - entity_name
+        usecase_name:
+          oneOf:
+            - properties:
+                add_usecase:
+                  const: false
+            - properties:
+                add_usecase:
+                  const: true
+              required:
+                - usecase_name
+        repository_name:
+          oneOf:
+            - properties:
+                add_repository:
+                  const: false
+            - properties:
+                add_repository:
+                  const: true
+              required:
+                - repository_name
+
+    - title: Data Layer Components
+      properties:
+        add_model:
+          title: Add Data Model
+          type: boolean
+          description: Generate data model class
+          default: false
+        model_name:
+          title: Model Name
+          type: string
+          description: Name of the model (snake_case, e.g., user_model)
+          pattern: '^[a-z][a-z0-9_]*$'
+        add_datasource:
+          title: Add Data Source
+          type: boolean
+          description: Generate data source implementation
+          default: false
+        datasource_name:
+          title: Data Source Name
+          type: string
+          description: Name of the data source (snake_case, e.g., user_remote_datasource)
+          pattern: '^[a-z][a-z0-9_]*$'
+        add_repository_impl:
+          title: Add Repository Implementation
+          type: boolean
+          description: Generate repository implementation in data layer
+          default: false
+      dependencies:
+        model_name:
+          oneOf:
+            - properties:
+                add_model:
+                  const: false
+            - properties:
+                add_model:
+                  const: true
+              required:
+                - model_name
+        datasource_name:
+          oneOf:
+            - properties:
+                add_datasource:
+                  const: false
+            - properties:
+                add_datasource:
+                  const: true
+              required:
+                - datasource_name
+
+    - title: Repository Configuration
+      required:
+        - repo_url
+      properties:
+        repo_url:
+          title: Repository URL
+          type: string
+          description: Target repository URL (github.com/owner/repo)
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base Template
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          feature_name: ${{ parameters.feature_name }}
+          type_feature: ${{ parameters.type_feature }}
+          add_screen: ${{ parameters.add_screen }}
+          screen_name: ${{ parameters.screen_name }}
+          add_bloc: ${{ parameters.add_bloc }}
+          bloc_name: ${{ parameters.bloc_name }}
+          add_entity: ${{ parameters.add_entity }}
+          entity_name: ${{ parameters.entity_name }}
+          add_usecase: ${{ parameters.add_usecase }}
+          usecase_name: ${{ parameters.usecase_name }}
+          add_repository: ${{ parameters.add_repository }}
+          repository_name: ${{ parameters.repository_name }}
+          add_model: ${{ parameters.add_model }}
+          model_name: ${{ parameters.model_name }}
+          add_datasource: ${{ parameters.add_datasource }}
+          datasource_name: ${{ parameters.datasource_name }}
+          add_repository_impl: ${{ parameters.add_repository_impl }}
+
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ parameters.repo_url }}
+        title: "feat: add ${{ parameters.feature_name }} feature"
+        branchName: "feature/${{ parameters.feature_name }}"
+        description: |
+          ## Flutter Feature: ${{ parameters.feature_name }}
+          
+          This PR adds a new Flutter feature following Clean Architecture principles.
+          
+          ### Generated Components:
+          {%- if values.add_entity %}
+          - ✅ Domain Entity: ${{ parameters.entity_name }}
+          {%- endif %}
+          {%- if values.add_repository %}
+          - ✅ Repository Interface: ${{ parameters.repository_name }}
+          {%- endif %}
+          {%- if values.add_usecase %}
+          - ✅ Use Case: ${{ parameters.usecase_name }}
+          {%- endif %}
+          {%- if values.add_model %}
+          - ✅ Data Model: ${{ parameters.model_name }}
+          {%- endif %}
+          {%- if values.add_datasource %}
+          - ✅ Data Source: ${{ parameters.datasource_name }}
+          {%- endif %}
+          {%- if values.add_repository_impl %}
+          - ✅ Repository Implementation
+          {%- endif %}
+          {%- if values.add_bloc %}
+          - ✅ BLoC Components: ${{ parameters.bloc_name }}
+          {%- endif %}
+          {%- if values.add_screen %}
+          - ✅ Screen/Page: ${{ parameters.screen_name }}
+          {%- endif %}
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

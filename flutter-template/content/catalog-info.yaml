@@ -3,6 +3,7 @@ kind: Component
 metadata:
   name: ${{ values.repoName }}
   description: Flutter application - ${{ values.appName }}
+  package_name: ${{ values.appName | lower | replace(' ', '_') }}
   annotations:
     github.com/project-slug: Devweave/${{ values.repoName }}
     backstage.io/techdocs-ref: dir:.

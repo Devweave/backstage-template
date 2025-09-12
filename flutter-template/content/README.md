@@ -16,12 +16,12 @@ This project is a starting point for a Flutter application.
 
 - Flutter SDK (latest stable version)
 - Dart SDK (comes with Flutter)
-{% if 'android' in values.platforms %}
+{%- if 'android' in values.platforms %}
 - Android Studio / Android SDK (for Android development)
-{% endif %}
-{% if 'ios' in values.platforms %}
+{%- endif %}
+{%- if 'ios' in values.platforms %}
 - Xcode (for iOS development, macOS only)
-{% endif %}
+{%- endif %}
 
 ### Installation
 
@@ -44,9 +44,9 @@ This project is a starting point for a Flutter application.
 ### Available Platforms
 
 This project has been configured for the following platforms:
-{% for platform in values.platforms %}
+{%- for platform in values.platforms %}
 - **{{ platform | title }}**: Ready for development
-{% endfor %}
+{%- endfor %}
 
 ### Project Structure
 
@@ -56,24 +56,24 @@ ${{ values.repoName }}/
 │   ├── main.dart       # App entry point
 │   └── ...
 ├── test/               # Unit and widget tests
-{% if 'android' in values.platforms %}
+{%- if 'android' in values.platforms %}
 ├── android/            # Android-specific code
-{% endif %}
-{% if 'ios' in values.platforms %}
+{%- endif %}
+{%- if 'ios' in values.platforms %}
 ├── ios/                # iOS-specific code
-{% endif %}
-{% if 'web' in values.platforms %}
+{%- endif %}
+{%- if 'web' in values.platforms %}
 ├── web/                # Web-specific code
-{% endif %}
-{% if 'windows' in values.platforms %}
+{%- endif %}
+{%- if 'windows' in values.platforms %}
 ├── windows/            # Windows-specific code
-{% endif %}
-{% if 'linux' in values.platforms %}
+{%- endif %}
+{%- if 'linux' in values.platforms %}
 ├── linux/              # Linux-specific code
-{% endif %}
-{% if 'macos' in values.platforms %}
+{%- endif %}
+{%- if 'macos' in values.platforms %}
 ├── macos/              # macOS-specific code
-{% endif %}
+{%- endif %}
 └── pubspec.yaml        # Project dependencies and metadata
 ```
 
@@ -81,93 +81,93 @@ ${{ values.repoName }}/
 
 To run the app on a specific platform:
 
-{% if 'android' in values.platforms %}
+{%- if 'android' in values.platforms %}
 ```bash
 # Android
 flutter run -d android
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'ios' in values.platforms %}
+{%- if 'ios' in values.platforms %}
 ```bash
 # iOS (macOS only)
 flutter run -d ios
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'web' in values.platforms %}
+{%- if 'web' in values.platforms %}
 ```bash
 # Web
 flutter run -d web-server
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'windows' in values.platforms %}
+{%- if 'windows' in values.platforms %}
 ```bash
 # Windows
 flutter run -d windows
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'linux' in values.platforms %}
+{%- if 'linux' in values.platforms %}
 ```bash
 # Linux
 flutter run -d linux
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'macos' in values.platforms %}
+{%- if 'macos' in values.platforms %}
 ```bash
 # macOS
 flutter run -d macos
 ```
-{% endif %}
+{%- endif %}
 
 ### Building for Release
 
-{% if 'android' in values.platforms %}
+{%- if 'android' in values.platforms %}
 #### Android
 ```bash
 flutter build apk --release
 # or for app bundle
 flutter build appbundle --release
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'ios' in values.platforms %}
+{%- if 'ios' in values.platforms %}
 #### iOS
 ```bash
 flutter build ios --release
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'web' in values.platforms %}
+{%- if 'web' in values.platforms %}
 #### Web
 ```bash
 flutter build web --release
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'windows' in values.platforms %}
+{%- if 'windows' in values.platforms %}
 #### Windows
 ```bash
 flutter build windows --release
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'linux' in values.platforms %}
+{%- if 'linux' in values.platforms %}
 #### Linux
 ```bash
 flutter build linux --release
 ```
-{% endif %}
+{%- endif %}
 
-{% if 'macos' in values.platforms %}
+{%- if 'macos' in values.platforms %}
 #### macOS
 ```bash
 flutter build macos --release
 ```
-{% endif %}
+{%- endif %}
 
 ## Contributing
 
