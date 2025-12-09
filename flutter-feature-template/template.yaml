@@ -219,6 +219,7 @@ spec:
       input:
         url: ./content
         values:
+          appName: ${{ parameters.appName }}
           feature_name: ${{ parameters.feature_name }}
           type_feature: ${{ parameters.type_feature }}
           add_screen: ${{ parameters.add_screen }}
