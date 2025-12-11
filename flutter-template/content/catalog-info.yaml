@@ -9,15 +9,20 @@ metadata:
   tags:
     - flutter
     - mobile
-    - cross-platform
+    - boilerplate
+    - clean-architecture
+    - bloc
   links:
     - url: https://github.com/Devweave/${{ values.repoName }}
       title: Repository
       icon: github
+    - url: https://github.com/Devweave/${{ values.repoName }}/actions
+      title: CI/CD Pipeline
+      icon: dashboard
 spec:
   type: mobile-app
-  lifecycle: development
-  owner: user:guest
+  lifecycle: production
+  owner: group:default/developers
   system: mobile-apps
   providesApis: []
   consumesApis: []
